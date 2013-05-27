@@ -26,7 +26,8 @@ type rss struct {
     Channel channel `xml:"channel"`
 }
 
-func Parse(contents string) []data.FeedItem {
+
+func Parse(contents string) (string, []data.FeedItem) {
     r := rss {}
     feedItems := []data.FeedItem {}
     err := xml.Unmarshal([]byte(contents), &r)
@@ -36,14 +37,17 @@ func Parse(contents string) []data.FeedItem {
     }
     channel := r.Channel
     
-    for _,item := range channel.Items {
+    for _, item := range channel.Items {
        t, err := time.Parse ("Mon, 02 Jan 2006 15:04:05 -0700", item.PubDate)
        if err != nil {
-           panic (err)
+           t, err = time.Parse ("Mon, 02 Jan 2006 15:04:05 GMT", item.PubDate)
+           if err != nil {
+            panic (err)
+           }
        }
-       feedItem := data.FeedItem { item.Guid, item.Title, item.Link, "", item.Description, t } 
+       feedItem := data.FeedItem { data.GenerateId(item.Guid), item.Title, item.Link, item.Description[:240] + "...", item.Description, t } 
        feedItems = append (feedItems, feedItem)
     }
 
-    return feedItems
+    return channel.Title, feedItems
 }

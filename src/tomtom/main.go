@@ -1,29 +1,21 @@
 package main
 
 import "fmt"
-import "crypto/md5"
-import "io"
 import "io/ioutil"
-import "net/http"
-import "time"
-import "os"
-/*
 import "tomtom/db"
-*/
-import "tomtom/data"
 import "tomtom/parser"
-var dataDir string = "/home/saaadhu/code/git/tomtom/data/"
-
-func hashUrl(url string) string {
-    h := md5.New()
-    io.WriteString(h, url)
-    return fmt.Sprintf("%x", h.Sum([]byte{}));
-}
+import "tomtom/data"
+import "net/http"
+import "encoding/json"
+import "time"
+import "log"
 
 func fetchUrl(url string) []byte {
+    log.Printf("Fetching %s", url)
     res, err := http.Get(url);
     if err != nil {
-        panic("Couldn't fetch URL")
+        log.Print(err)
+        return []byte{}
     }
     
     defer res.Body.Close()
@@ -35,74 +27,86 @@ func fetchUrl(url string) []byte {
     return contents
 }
 
-func handle (feed *data.Feed, contents string) {
+func addFeedHandler(w http.ResponseWriter, r *http.Request) {
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        panic(err)
+    }
+    type JsonData struct {
+        Url string
+    }
+    var jsonData JsonData
+    json.Unmarshal (body, &jsonData)
+
+    feed := data.Feed { Id: data.GenerateId (jsonData.Url), Url : jsonData.Url }
+    db.AddFeed (feed)
+    fetchFeed (feed)
     
+    listFeedsHandler(w, r)
 }
 
-func save (urlhash string, contents []byte) {
-    err := os.MkdirAll(dataDir + urlhash, 0777)
-    if (err != nil) {
-        panic("Could not create dir")
-    }
+func listFeedsHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header ().Add ("Content-Type", "application/json")
+    data, err := json.Marshal(db.GetAllFeeds())
     
-    filename := time.Now().Format(time.RFC3339)
-    err = ioutil.WriteFile(dataDir + urlhash + "/" + filename, contents, 0777)
-    if (err != nil) {
-        panic("Could not save file")
+    if err != nil {
+        panic (err)
+    }
+
+    fmt.Fprintf (w, string(data))
+}
+
+func feedHandler(w http.ResponseWriter, r *http.Request) {
+    feedId := r.URL.Path[6:]
+    w.Header ().Add ("Content-Type", "application/json")
+    data, err := json.Marshal (db.GetFeedItems(feedId))
+    
+    if err != nil {
+        panic (err)
+    }
+
+    fmt.Fprintf (w, string(data))
+}
+
+func initWebServer() {
+    http.HandleFunc("/feeds/add", addFeedHandler)
+    http.HandleFunc("/feeds", listFeedsHandler)
+    http.HandleFunc("/feed/", feedHandler)
+    http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("/home/saaadhu/code/git/tomtom/src/tomtom/www"))))
+    http.ListenAndServe(":8080", nil)
+}
+
+func fetchFeed (feed data.Feed) {
+    contents := fetchUrl (feed.Url)
+    
+    if len(contents) == 0 {
+        return
+    }
+
+    title, feedItems := parser.Parse (string (contents))
+
+    feed.Title = title
+    feed.LastFetch = time.Now()
+
+    db.UpdateFeed (feed)
+    for _, feedItem := range feedItems {
+        db.SaveFeedItem (feed, feedItem)
     }
 }
+
+func fetchFeeds() {
+    for _,feed := range db.GetAllFeeds() {
+        fetchFeed (feed)
+    }
+}
+
 
 func main() {
-    text := `
-<?xml version="1.0" encoding="utf-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <atom:link href="http://www.codinghorror.com/blog/index.xml" rel="self" type="application/rss+xml" />
-        <title>Coding Horror</title>
-        <link>http://www.codinghorror.com/blog/</link>
-        <description>programming and human factors - Jeff Atwood</description>
-        <language>en-us</language>
-      
-        <lastBuildDate>Mon, 29 Apr 2013 16:45:34 -0700</lastBuildDate>
-        <pubDate>Mon, 29 Apr 2013 16:45:34 -0700</pubDate>
-        <generator>http://www.typepad.com/</generator>
-        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
-        
-        <image>
-            <title>Coding Horror</title>
-            <url>http://www.codinghorror.com/blog/images/coding-horror-official-logo-small.png</url>
-            <width>100</width>
-            <height>91</height>
-            <description>Logo image used with permission of the author. (c) 1993 Steven C. McConnell. All Rights Reserved.</description>
-            <link>http://www.codinghorror.com/blog/</link>
-        </image>
-        
-        <xhtml:meta xmlns:xhtml="http://www.w3.org/1999/xhtml" name="robots" content="noindex" />
-
+    go initWebServer()
     
-        <item>
-            <title>So You Don&#39;t Want to be a Programmer After All</title>
-            <link>http://www.codinghorror.com/blog/2013/04/so-you-dont-want-to-be-a-programmer-after-all.html</link>
-            <description><![CDATA[<p>
-I get a surprising number of emails from career programmers who have spent some time in the profession and eventually decided it just isn't for them. Most recently this:
-</p>
-I've seen less "adept" programmers self-select into related roles at previous jobs and do very well, both financially and professionally. There is a <i>lot</i> of stuff that goes on around programming that is not heads down code writing, where your programming skills are a competitive advantage.
-</p>
-</table>]]></description>
-            <guid>http://www.codinghorror.com/blog/2013/04/so-you-dont-want-to-be-a-programmer-after-all.html</guid>
-            <pubDate>Mon, 29 Apr 2013 16:45:34 -0700</pubDate>
-        </item>
-    </channel>
-</rss>`
-
-    for _, feedItem := range parser.Parse(text) {
-        fmt.Println (feedItem)
+    for ;; {
+        fetchFeeds ()
+        time.Sleep (5 * time.Minute)
     }
-    /*
-    for _,feed := range db.GetFeeds() {
-        url := feed.Url
-        id := feed.Id
-        contents := fetchUrl(url);
-    }
-    */
+    
 }

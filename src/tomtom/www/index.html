@@ -1,0 +1,27 @@
+<html ng-app>
+  <title> Tomtom </title>
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css'>
+  </head>
+  <body ng-controller="TomTomCtrl" style="font-family:Open Sans;sans-serif;">
+    <div style="clear:none;float:left;min-width:250px;max-width:250px;margin:0px auto;position:fixed" width="10%">
+      <h2> Feeds </h2>
+      <div>
+        <label for="url"> Subscribe: </label>
+        <input id="url" type='text' ng-model="new_url" />
+        <input type="button" ng-click="addUrl();" value="Subscribe" />
+      </div>
+      <div ng-repeat="feed in feeds" style="float:right">
+          <div> <a href="#" ng-click="loadFeed(feed.Id);"> {{ feed.Title }} </a> </div>
+      </div>
+    </div>
+    <div style="clear:none;overflow:auto;max-width:960px;width:70%;margin:0px auto">
+        <div ng-repeat="item in items">
+            <h2> {{ item.Title }} </h2>
+            <div ng-bind-html-unsafe="item.Contents"></div>
+        </div>
+    </div>
+  </body>
+  <script src="scripts/angular.min.js" /></script>
+  <script src="scripts/tomtom.js" /></script>
+</html>
