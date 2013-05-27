@@ -68,7 +68,7 @@ func GetFeedItems (feedId string) []data.FeedItem {
     con := getConnection()
     defer con.Close()
     
-    rows, err := con.Query ("select id, title, url, blurb, published from feeditems where feed=?", feedId)
+    rows, err := con.Query ("select id, title, url, blurb, published from feeditems where feed=? order by published desc", feedId)
     if err != nil {
         panic (err)
     }

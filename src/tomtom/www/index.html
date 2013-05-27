@@ -3,23 +3,27 @@
   <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css'>
   </head>
-  <body ng-controller="TomTomCtrl" style="font-family:Open Sans;sans-serif;">
-    <div style="clear:none;float:left;min-width:250px;max-width:250px;margin:0px auto;position:fixed" width="10%">
-      <h2> Feeds </h2>
-      <div>
-        <label for="url"> Subscribe: </label>
-        <input id="url" type='text' ng-model="new_url" />
-        <input type="button" ng-click="addUrl();" value="Subscribe" />
-      </div>
-      <div ng-repeat="feed in feeds" style="float:right">
-          <div> <a href="#" ng-click="loadFeed(feed.Id);"> {{ feed.Title }} </a> </div>
-      </div>
-    </div>
-    <div style="clear:none;overflow:auto;max-width:960px;width:70%;margin:0px auto">
-        <div ng-repeat="item in items">
-            <h2> {{ item.Title }} </h2>
-            <div ng-bind-html-unsafe="item.Contents"></div>
+  <body ng-controller="TomTomCtrl" style="font-family:Open Sans;sans-serif;font-size:10pt">
+    <div style="width:95%">
+      <div style="clear:none;float:left;;max-width:250px;width:18%;margin:0px auto;position:fixed;border-right:1px solid #EEEEEE;padding-right:26px;">
+        <div style="margin-bottom:20px;margin-left:10px;">
+          <label for="url"> URL: </label>
+          <input id="url" style="width:220px;" type="text" ng-model="new_url" />
+          <input type="button" ng-click="addUrl();" value="Add" />
         </div>
+        <div style="float:left;margin:10px;line-height:1.5">
+          <div ng-repeat="feed in feeds" >
+            <div> <a href="#" ng-click="loadFeed(feed.Id);" style="font-size:10pt;text-decoration:none;"> {{ feed.Title }} </a> </div>
+          </div>
+        </div>
+      </div>
+      <div style="clear:none;overflow:auto;max-width:960px;width:80%;margin-left:23%">
+        <div ng-repeat="item in items" style="margin:bottom:10px;">
+            <a style="text-decoration:none" href="{{item.Url}}"><h3 ng-bind-html-unsafe="item.Title"></h3></a>
+          <div ng-bind-html-unsafe="item.Contents"></div>
+          <div style="max-width:100%;margin:auto;border-top:1px solid #EEEEEE;"></div>
+        </div>
+      </div>
     </div>
   </body>
   <script src="scripts/angular.min.js" /></script>

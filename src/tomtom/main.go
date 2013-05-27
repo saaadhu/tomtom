@@ -105,8 +105,8 @@ func main() {
     go initWebServer()
     
     for ;; {
+        time.Sleep (15 * time.Minute)
         fetchFeeds ()
-        time.Sleep (5 * time.Minute)
     }
     
 }
