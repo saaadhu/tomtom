@@ -68,20 +68,20 @@ func GetFeedItems (feedId string) []data.FeedItem {
     con := getConnection()
     defer con.Close()
     
-    rows, err := con.Query ("select id, title, url, blurb, published from feeditems where feed=? order by published desc", feedId)
+    rows, err := con.Query ("select id, title, url, published from feeditems where feed=? order by published desc", feedId)
     if err != nil {
         panic (err)
     }
 
     feedItems := []data.FeedItem {}
     for rows.Next() {
-        var id, title, url, blurb string
+        var id, title, url string
         var published time.Time
-        rows.Scan (&id, &title, &url, &blurb, &published)
+        rows.Scan (&id, &title, &url, &published)
         
         contents := readItem (feedId, id)
         
-        feedItems = append (feedItems, data.FeedItem { Id: id, Title: title, Url: url, Pubdate: published, Blurb: blurb, Contents: contents })
+        feedItems = append (feedItems, data.FeedItem { Id: id, Title: title, Url: url, Pubdate: published, Contents: contents })
     }
     
     return feedItems

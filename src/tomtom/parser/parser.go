@@ -4,6 +4,7 @@ import "encoding/xml"
 import "tomtom/data"
 import "time"
 import "log"
+import "strings"
 //import "fmt"
 
 type item struct {
@@ -96,16 +97,17 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
            item.Description = item.EncodedContent
        }
 
-       blurb_length := len(item.Description)
-       if blurb_length > 240 {
-           blurb_length = 240
+       words := strings.Split (item.Description, " ")
+       blurb_length := len(words)
+       if blurb_length > 25 {
+           blurb_length = 25 
        }
        
        id := item.Guid
        if len(id) == 0 {
            id = item.Title
        }
-       feedItem := data.FeedItem { data.GenerateId(id), item.Title, item.Link, item.Description[:blurb_length] + "...", item.Description, t } 
+       feedItem := data.FeedItem { data.GenerateId(id), item.Title, item.Link, strings.Join(words[:blurb_length], " ") + "...", item.Description, t } 
        feedItems = append (feedItems, feedItem)
     }
 
