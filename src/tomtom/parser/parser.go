@@ -65,7 +65,6 @@ func parseTime (contents string) (time.Time, error) {
         }
         last_error = err
     }
-    
     return time.Now(), last_error
 }
 

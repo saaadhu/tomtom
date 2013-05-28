@@ -47,7 +47,7 @@ func GetAllFeeds() []data.Feed {
     con := getConnection()
     defer con.Close()
 
-    rows, err := con.Query ("select id, title, url, last_fetch from feeds")
+    rows, err := con.Query ("select id, title, url, last_fetch, server_last_modified from feeds")
     
     if err != nil {
         panic (err)
@@ -55,10 +55,10 @@ func GetAllFeeds() []data.Feed {
     
     feeds := []data.Feed {}
     for rows.Next() {
-        var id, url,title string
+        var id, url,title, serverLastModified string
         var lastFetch time.Time
-        rows.Scan (&id, &title, &url, &lastFetch)
-        feeds = append (feeds, data.Feed { Id : id, Title: title, Url : url, LastFetch: lastFetch })
+        rows.Scan (&id, &title, &url, &lastFetch, &serverLastModified)
+        feeds = append (feeds, data.Feed { Id : id, Title: title, Url : url, LastFetch: lastFetch, LastModified : serverLastModified })
     }
     
     return feeds
@@ -108,13 +108,13 @@ func UpdateFeed (feed data.Feed) {
     con := getConnection()
     defer con.Close()
 
-    stmt, err := con.Prepare("UPDATE feeds SET title=?,last_fetch=? WHERE id=?")
+    stmt, err := con.Prepare("UPDATE feeds SET title=?,last_fetch=?, server_last_modified=? WHERE id=?")
     
     if err != nil {
         panic (err)
     }
 
-    _, err = stmt.Exec (feed.Title, feed.LastFetch, feed.Id)
+    _, err = stmt.Exec (feed.Title, feed.LastFetch, feed.LastModified, feed.Id)
     if err != nil {
         panic (err)
     }

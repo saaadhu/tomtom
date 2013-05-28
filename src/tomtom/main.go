@@ -10,21 +10,31 @@ import "encoding/json"
 import "time"
 import "log"
 
-func fetchUrl(url string) []byte {
+var client = &http.Client {}
+
+func fetchUrl(url string, lastModified string) (string, []byte) {
     log.Printf("Fetching %s", url)
-    res, err := http.Get(url);
+    req, _ := http.NewRequest ("GET", url, nil)
+
+    if len(lastModified) != 0 {
+        req.Header.Add ("If-Modified-Since", lastModified)
+    }
+    res, err := client.Do (req);
     if err != nil {
         log.Print(err)
-        return []byte{}
+        return "", []byte{}
     }
-    
     defer res.Body.Close()
+    
+    if res.StatusCode == 304 {
+        return "", []byte{}
+    }
     
     contents, err := ioutil.ReadAll(res.Body)
     if err != nil {
         panic("Couldn't read contents")
     }
-    return contents
+    return res.Header.Get("Last-Modified"), contents
 }
 
 func addFeedHandler(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +87,7 @@ func initWebServer() {
 }
 
 func fetchFeed (feed data.Feed) {
-    contents := fetchUrl (feed.Url)
+    lastModified, contents := fetchUrl (feed.Url, feed.LastModified)
     
     if len(contents) == 0 {
         return
@@ -87,6 +97,7 @@ func fetchFeed (feed data.Feed) {
 
     feed.Title = title
     feed.LastFetch = time.Now()
+    feed.LastModified = lastModified
 
     db.UpdateFeed (feed)
     for _, feedItem := range feedItems {
