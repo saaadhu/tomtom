@@ -63,19 +63,19 @@ func listFeedsHandler(w http.ResponseWriter, r *http.Request) {
         panic (err)
     }
 
-    fmt.Fprintf (w, string(data))
+    fmt.Fprintf (w, "%s", data)
 }
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {
     feedId := r.URL.Path[6:]
     w.Header ().Add ("Content-Type", "application/json")
     data, err := json.Marshal (db.GetFeedItems(feedId))
-    
+
     if err != nil {
         panic (err)
     }
 
-    fmt.Fprintf (w, string(data))
+    fmt.Fprintf (w, "%s", data)
 }
 
 func initWebServer() {
