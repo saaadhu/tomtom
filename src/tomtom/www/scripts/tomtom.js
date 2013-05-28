@@ -17,6 +17,7 @@ function TomTomCtrl ($scope, $http) {
     
     $scope.addUrl = function() {
         $http.post ("/feeds/add", { "url": $scope.new_url }).success (function (data) {
+            $scope.new_url = '';
             $scope.feeds = data;
         });
     };

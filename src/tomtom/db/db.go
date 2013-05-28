@@ -43,7 +43,29 @@ func readItem (feedId string, feedItemId string) string {
     return string (contents)
 }
 
-func GetAllFeeds() []data.Feed {
+func GetAllFeedsForUser (userid string) []data.Feed {
+    con := getConnection()
+    defer con.Close()
+
+    rows, err := con.Query ("select id, title, url, last_fetch, server_last_modified from feeds, userfeeds where userfeeds.userid=? and feeds.id = userfeeds.feed", userid)
+    
+    if err != nil {
+        panic (err)
+    }
+    
+    feeds := []data.Feed {}
+    for rows.Next() {
+        var id, url,title, serverLastModified string
+        var lastFetch time.Time
+        rows.Scan (&id, &title, &url, &lastFetch, &serverLastModified)
+        feeds = append (feeds, data.Feed { Id : id, Title: title, Url : url, LastFetch: lastFetch, LastModified : serverLastModified })
+    }
+    
+    return feeds
+}
+
+
+func GetAllFeeds () []data.Feed {
     con := getConnection()
     defer con.Close()
 
@@ -87,21 +109,35 @@ func GetFeedItems (feedId string) []data.FeedItem {
     return feedItems
 }
 
-func AddFeed (feed data.Feed) {
+func AddFeed (feed data.Feed, userid string) bool {
     con := getConnection()
     defer con.Close()
 
-    stmt, err := con.Prepare("INSERT INTO feeds (id, title, url, last_fetch) VALUES (?,?,?,?)")
+    stmt, err := con.Prepare("INSERT IGNORE INTO feeds (id, title, url, last_fetch) VALUES (?,?,?,?)")
     
     if err != nil {
         panic (err)
     }
     
-    _, err = stmt.Exec (feed.Id, feed.Title, feed.Url, feed.LastFetch)
+    res, err := stmt.Exec (feed.Id, feed.Title, feed.Url, feed.LastFetch)
     if err != nil {
         panic (err)
     }
+    rows_affected, _ := res.RowsAffected()
+    row_inserted := rows_affected == 1
+    
+    stmt, err = con.Prepare ("INSERT IGNORE INTO userfeeds (userid, feed) VALUES (?, ?)")
 
+    if err != nil {
+        panic (err)
+    }
+    
+    _, err = stmt.Exec (userid, feed.Id)
+    if err != nil {
+        panic (err)
+    }
+    
+    return row_inserted
 }
 
 func UpdateFeed (feed data.Feed) {
