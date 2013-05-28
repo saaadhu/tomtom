@@ -1,7 +1,10 @@
+<!DOCTYPE html>
 <html ng-app>
   <title> Tomtom </title>
+  <meta charset="UTF-8" />
   <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400' rel='stylesheet' type='text/css'>
   </head>
   <body ng-controller="TomTomCtrl" style="font-family:Open Sans;sans-serif;font-size:10pt">
     <div style="width:95%">
@@ -19,8 +22,10 @@
       </div>
       <div style="clear:none;overflow:auto;max-width:960px;width:80%;margin-left:23%">
         <div ng-repeat="item in items" style="margin:bottom:10px;">
-            <a style="text-decoration:none" href="{{item.Url}}"><h3 ng-bind-html-unsafe="item.Title"></h3></a>
-          <div ng-bind-html-unsafe="item.Contents"></div>
+            <a style="text-decoration:none" href="{{item.Url}}">
+              <div style="font-family:Droid Serif;serif;font-size:2em;margin-top:10px;"  ng-bind-html-unsafe="item.Title"></div>
+            </a>
+          <div style="font-size:10pt;line-height:1.4"  ng-bind-html-unsafe="item.Contents"></div>
           <div style="max-width:100%;margin:auto;border-top:1px solid #EEEEEE;"></div>
         </div>
       </div>
