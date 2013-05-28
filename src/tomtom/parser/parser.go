@@ -55,10 +55,13 @@ func parseTime (contents string) (time.Time, error) {
     if len(contents) == 0 {
         return time.Now(), nil
     }
-    
-    timeFormats := []string { "Mon, 02 Jan 2006 15:04:05 -0700", "Mon, 02 Jan 2006 15:04:05 GMT", time.RFC3339 }
+    timeFormats := []string {
+        time.RFC1123,
+        time.RFC1123Z,
+        time.RFC3339,
+        "02 Jan 2006 15:04:05 MST",
+    }
     var last_error error
-    
     for _, format := range timeFormats {
         t, err := time.Parse (format, contents)
         if err == nil {
