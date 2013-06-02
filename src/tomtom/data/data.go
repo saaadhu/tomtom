@@ -19,6 +19,7 @@ type Feed struct {
     Url  string
     LastFetch time.Time
     LastModified string
+    UnreadItemsCount int
 }
 
 func GenerateId(str string) string {

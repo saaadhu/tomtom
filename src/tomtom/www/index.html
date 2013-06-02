@@ -5,6 +5,18 @@
   <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400' rel='stylesheet' type='text/css'>
+    <style>
+      a
+      {
+        font-size:10pt;
+      }
+      .unread {
+        text-decoration: bold;
+      }
+      .read {
+        text-decoration: none;
+      }
+    </style>
   </head>
   <body ng-controller="TomTomCtrl" style="font-family:Open Sans;sans-serif;font-size:10pt">
     <div style="width:95%">
@@ -15,13 +27,19 @@
           <input type="button" ng-click="addUrl();" value="Add" />
         </div>
         <div style="float:left;margin:10px;line-height:1.5">
-          <div ng-repeat="feed in feeds" >
-            <div> <a href="#" ng-click="loadFeed(feed.Id);" style="font-size:10pt;text-decoration:none;"> {{ feed.Title }} </a> </div>
+          <div ng-show="loading_feeds || adding_feed" style="padding-left:50%; padding-top:25%">
+            <img src="images/ajax-loader.gif" />
+          </div>
+          <div ng-hide="loading_feeds || adding_feed" ng-repeat="feed in feeds" >
+            <div style="padding-bottom:5px"> <a  href="#" ng-click="loadFeed(feed.Id);" ng-bind-html-unsafe="feed.Title" ng-class="{'unread': feed.UnreadItemsCount > 0, 'read': feed.UnreadItemsCount == 0}"> </a> </div>
           </div>
         </div>
       </div>
       <div style="clear:none;overflow:auto;max-width:960px;width:80%;margin-left:23%">
-        <div ng-repeat="item in items" style="margin:bottom:10px;">
+          <div ng-show="loading_feed_items" style="padding-left:50%; padding-top:25%">
+            <img src="images/ajax-loader.gif" />
+          </div>
+          <div ng-hide="loading_feed_items" ng-repeat="item in items" style="margin:bottom:10px;">
             <a style="text-decoration:none" href="{{item.Url}}">
               <div style="font-family:Droid Serif;serif;font-size:2em;margin-top:10px;"  ng-bind-html-unsafe="item.Title"></div>
             </a>
