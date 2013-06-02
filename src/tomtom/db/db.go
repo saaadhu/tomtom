@@ -75,7 +75,7 @@ func GetAllFeeds () []data.Feed {
     con := getConnection()
     defer con.Close()
 
-    rows, err := con.Query ("select id, title, url, last_fetch, server_last_modified from feeds")
+    rows, err := con.Query ("select id, title, url, server_last_modified, last_fetch from feeds")
     
     if err != nil {
         panic (err)
@@ -85,8 +85,8 @@ func GetAllFeeds () []data.Feed {
     for rows.Next() {
         var id, url,title, serverLastModified string
         var lastFetch time.Time
-        rows.Scan (&id, &title, &url, &lastFetch, &serverLastModified)
-        feeds = append (feeds, data.Feed { Id : id, Title: title, Url : url, LastFetch: lastFetch, LastModified : serverLastModified })
+        rows.Scan (&id, &title, &url, &serverLastModified, &lastFetch)
+        feeds = append (feeds, data.Feed { Id : id, Title: title, Url : url, LastModified : serverLastModified, LastFetch : lastFetch })
     }
     
     return feeds
