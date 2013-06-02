@@ -168,7 +168,11 @@ func fetchFeed (feed data.Feed) {
         return
     }
 
-    title, feedItems := parser.Parse (string (contents))
+    title, feedItems, err := parser.Parse (string (contents))
+    
+    if err != nil {
+        return
+    }
 
     feed.Title = title
     feed.LastFetch = time.Now()

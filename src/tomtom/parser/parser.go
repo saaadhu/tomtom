@@ -78,7 +78,6 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
     err := xml.Unmarshal([]byte(contents), &r)
 
     if err != nil {
-        log.Printf("Parsing with RSS failed : %s", err)
         return "", []data.FeedItem{}, err
     }
     channel := r.Channel
@@ -148,17 +147,17 @@ func parseFeed (contents string) (string, []data.FeedItem, error) {
     return r.Title, feedItems, nil
 }
 
-func Parse(contents string) (string, []data.FeedItem) {
+func Parse(contents string) (string, []data.FeedItem, error) {
     title, feedItems, err := parseRSS (contents)
 
     if (err == nil) {
-        return title, feedItems
+        return title, feedItems, nil
     }
 
     title, feedItems, err = parseFeed (contents)
     if (err != nil) {
-        panic (err)
+        log.Printf ("%s", err)
     }
 
-    return title, feedItems
+    return title, feedItems, err
 }
