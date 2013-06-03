@@ -11,6 +11,7 @@ import "time"
 import "log"
 import "code.google.com/p/goauth2/oauth"
 import "github.com/gorilla/sessions"
+import "strconv"
 
 var client = &http.Client {}
 var store = sessions.NewCookieStore([]byte("tomtom-secret-key"))
@@ -94,8 +95,39 @@ func listFeedsHandler(w http.ResponseWriter, r *http.Request) {
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {
     feedId := r.URL.Path[6:]
+    offset, err := strconv.Atoi (r.FormValue("o"))
+
+    if (err != nil) {
+        panic (err)
+    }
+
     w.Header ().Add ("Content-Type", "application/json")
-    data, err := json.Marshal (db.GetFeedItems(feedId))
+    data, err := json.Marshal (db.GetFeedItems(feedId, offset))
+
+    if err != nil {
+        panic (err)
+    }
+
+    fmt.Fprintf (w, "%s", data)
+}
+
+type Pair struct
+{
+    Feed data.Feed
+    FeedItem data.FeedItem
+}
+
+func recentFeedItemsHandler (w http.ResponseWriter, r *http.Request) {
+    userid := getUserId (w, r)
+    feeds, feedItems := db.GetRecentFeedItems (userid)
+    
+    pairs := []Pair {}
+    for i, feed := range feeds {
+        pairs = append (pairs, Pair { feed, feedItems[i] })
+    }
+    
+    w.Header ().Add ("Content-Type", "application/json")
+    data, err := json.Marshal (pairs)
 
     if err != nil {
         panic (err)
@@ -154,6 +186,7 @@ func oauthCallbackHandler (w http.ResponseWriter, r *http.Request) {
 func initWebServer() {
     http.HandleFunc("/feeds/add", addFeedHandler)
     http.HandleFunc("/feeds", listFeedsHandler)
+    http.HandleFunc("/recent", recentFeedItemsHandler)
     http.HandleFunc("/feed/", feedHandler)
     http.HandleFunc("/", authenticationHandler)
     http.HandleFunc("/oauth2callback", oauthCallbackHandler)

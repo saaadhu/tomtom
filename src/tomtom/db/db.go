@@ -92,11 +92,38 @@ func GetAllFeeds () []data.Feed {
     return feeds
 }
 
-func GetFeedItems (feedId string) []data.FeedItem {
+func GetRecentFeedItems (userid string) ([]data.Feed, []data.FeedItem) {
+    con := getConnection()
+    defer con.Close()
+
+    rows, err := con.Query ("select feeds.id, feeds.title, feeditems.id, feeditems.title, feeditems.blurb " +
+                            "from feeds, userfeeds, feeditems " +
+                            "where userfeeds.userid=? and feeds.id = userfeeds.feed and userfeeds.feed = feeditems.feed and " +
+                               "(feeditems.published > (select published from feeditems where id = last_read_item) or userfeeds.last_read_item IS NULL)" +
+                            "group by userfeeds.feed order by feeditems.published desc LIMIT 5", userid)
+    if err != nil {
+        panic (err)
+    }
+
+    feedItems := []data.FeedItem {}
+    feeds := []data.Feed {}
+    for rows.Next() {
+        var feedId, feedTitle, feedItemTitle, feedItemId, feedItemBlurb string
+        rows.Scan (&feedId, &feedTitle, &feedItemId, &feedItemTitle, &feedItemBlurb)
+        
+        feeds = append (feeds, data.Feed { Id: feedId, Title: feedTitle })
+        feedItems = append (feedItems, data.FeedItem { Id: feedItemId, Title: feedItemTitle, Blurb: feedItemBlurb })
+    }
+    
+    return feeds, feedItems
+
+}
+
+func GetFeedItems (feedId string, offset int) []data.FeedItem {
     con := getConnection()
     defer con.Close()
     
-    rows, err := con.Query ("select id, title, url, published from feeditems where feed=? order by published desc", feedId)
+    rows, err := con.Query ("select id, title, url, published from feeditems where feed=? order by published desc LIMIT ?, 5", feedId, offset)
     if err != nil {
         panic (err)
     }
@@ -112,7 +139,7 @@ func GetFeedItems (feedId string) []data.FeedItem {
         feedItems = append (feedItems, data.FeedItem { Id: id, Title: title, Url: url, Pubdate: published, Contents: contents })
     }
     
-    if len(feedItems) > 0 {
+    if offset == 0 && len(feedItems) > 0 {
         stmt, err := con.Prepare("UPDATE userfeeds SET last_read_item=? WHERE feed=?")
 
         if err != nil {

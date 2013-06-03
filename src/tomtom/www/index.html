@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app ng-cloak>
   <title> Tomtom </title>
   <meta charset="UTF-8" />
   <head>
@@ -8,22 +8,29 @@
     <style>
       a
       {
+        text-decoration: none;
         font-size:10pt;
       }
       .unread {
-        text-decoration: bold;
+        font-weight: bold;  
       }
       .read {
-        text-decoration: none;
+        font-weight: normal;
+      }
+
+      #blurb p {
+        margin: 0px;
       }
     </style>
+    <script src="scripts/angular.min.js" /></script>
+    <script src="scripts/tomtom.js" /></script>
   </head>
   <body ng-controller="TomTomCtrl" style="font-family:Open Sans;sans-serif;font-size:10pt">
     <div style="width:95%">
       <div style="clear:none;float:left;;max-width:250px;width:18%;margin:0px auto;position:fixed;border-right:1px solid #EEEEEE;padding-right:26px;">
         <div style="margin-bottom:20px;margin-left:10px;">
           <label for="url"> URL: </label>
-          <input id="url" style="width:220px;" type="text" ng-model="new_url" />
+          <input id="url" style="width:90%;" type="text" ng-model="new_url" />
           <input type="button" ng-click="addUrl();" value="Add" />
         </div>
         <div style="float:left;margin:10px;line-height:1.5">
@@ -31,24 +38,34 @@
             <img src="images/ajax-loader.gif" />
           </div>
           <div ng-hide="loading_feeds || adding_feed" ng-repeat="feed in feeds" >
-            <div style="padding-bottom:5px"> <a  href="#" ng-click="loadFeed(feed.Id);" ng-bind-html-unsafe="feed.Title" ng-class="{'unread': feed.UnreadItemsCount > 0, 'read': feed.UnreadItemsCount == 0}"> </a> </div>
+              <div style="padding-bottom:5px"> <a  href="#" ng-click="loadFeed(feed.Id);" ng-bind-html-unsafe="feed.Title" ng-class="{'unread': feed.UnreadItemsCount > 0, 'read': feed.UnreadItemsCount == 0}"> </a> <span style="font-size:8pt;color:#777777"> ({{feed.UnreadItemsCount}}) </span> </div>
           </div>
         </div>
       </div>
       <div style="clear:none;overflow:auto;max-width:960px;width:80%;margin-left:23%">
-          <div ng-show="loading_feed_items" style="padding-left:50%; padding-top:25%">
-            <img src="images/ajax-loader.gif" />
+        <div ng-show="loading_feed_items" style="padding-left:50%; padding-top:25%">
+          <img src="images/ajax-loader.gif" />
+        </div>
+        <div ng-show="current_feed_id==''">
+          <a href="#" ng-repeat="pair in pairs" style="margin-bottom:15px;">
+            <div ng-click="loadFeed(pair.Feed.Id)">
+              <div ng-bind-html-unsafe="pair.Feed.Title" style="font-family:Droid Serif serif; font-size: 1.5em;margin-bottom:15px;"></div> 
+              <div ng-bind-html-unsafe="pair.FeedItem.Title" style="font-weight:bold; margin-bottom"></div>
+              <div id="blurb" ng-bind-html-unsafe="pair.FeedItem.Blurb"></div>
+            </div>
           </div>
-          <div ng-hide="loading_feed_items" ng-repeat="item in items" style="margin:bottom:10px;">
-            <a style="text-decoration:none" href="{{item.Url}}">
-              <div style="font-family:Droid Serif;serif;font-size:2em;margin-top:10px;"  ng-bind-html-unsafe="item.Title"></div>
-            </a>
+        </a>
+        <div ng-hide="loading_feed_items" ng-repeat="item in items" style="margin:bottom:10px;">
+          <a style="text-decoration:none" id="{{item.Id}}" href="{{item.Url}}">
+            <div style="font-family:Droid Serif;serif;font-size:2em;margin-top:10px;" when-scrolled="moreOfFeed()" ng-bind-html-unsafe="item.Title"></div>
+          </a>
           <div style="font-size:10pt;line-height:1.4"  ng-bind-html-unsafe="item.Contents"></div>
           <div style="max-width:100%;margin:auto;border-top:1px solid #EEEEEE;"></div>
+        </div>
+        <div ng-show="more_to_fetch" style="margin:20px;background:#EEEEEE">
+            <input type="button" ng-click="moreOfFeed();" value="Show more" style="margin-left:35%;" />
         </div>
       </div>
     </div>
   </body>
-  <script src="scripts/angular.min.js" /></script>
-  <script src="scripts/tomtom.js" /></script>
 </html>
