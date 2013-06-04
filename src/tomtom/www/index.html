@@ -49,8 +49,8 @@
         <div ng-show="current_feed_id==''">
           <a href="#" ng-repeat="pair in pairs" style="margin-bottom:15px;">
             <div ng-click="loadFeed(pair.Feed.Id)">
-              <div ng-bind-html-unsafe="pair.Feed.Title" style="font-family:Droid Serif serif; font-size: 1.5em;margin-bottom:15px;"></div> 
-              <div ng-bind-html-unsafe="pair.FeedItem.Title" style="font-weight:bold; margin-bottom"></div>
+              <div ng-bind-html-unsafe="pair.Feed.Title" style="font-family:Droid Serif serif; font-size: 1.5em;margin-bottom:15px;margin-top:20px;"></div> 
+              <div ng-bind-html-unsafe="pair.FeedItem.Title" style="font-size:1.2em;margin-bottom"></div>
               <div id="blurb" ng-bind-html-unsafe="pair.FeedItem.Blurb"></div>
             </div>
           </div>
