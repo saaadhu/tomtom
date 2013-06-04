@@ -70,6 +70,7 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
    
     $scope.loadFeed = function (id) {
         offset = 0;
+        $scope.items = [];
         $scope.current_feed_id = id;
         fetchAndLoadFeedContents (id);
     };
