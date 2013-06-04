@@ -101,8 +101,8 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
 
        words := strings.Split (item.Description, " ")
        blurb_length := len(words)
-       if blurb_length > 25 {
-           blurb_length = 25 
+       if blurb_length > 50  {
+           blurb_length = 50 
        }
        
        id := item.Guid
