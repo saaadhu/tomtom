@@ -100,7 +100,7 @@ input[type=text]
     margin:10px;
     line-height:1.5;
     max-width:250px;
-    width:90%;
+    width:95%;
 }
 
 .spinner { 
@@ -113,7 +113,7 @@ input[type=text]
 }
 
 .title {
-    max-width: 180px;
+    max-width: 210px;
     overflow: hidden;
     white-space:nowrap;
     text-overflow: ellipsis;
@@ -147,7 +147,7 @@ input[type=text]
 }
 
 .feedTitle {
-    font-family:Droid Serif serif; 
+    font-family:Open Sans, sans-serif; 
     font-size: 1.5em;
     margin-bottom:15px;
     margin-top:20px;
