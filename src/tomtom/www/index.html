@@ -46,17 +46,17 @@
           <img src="images/ajax-loader.gif" />
         </div>
         <div ng-show="current_feed_id==''">
-          <a href="#" ng-repeat="pair in pairs" class="recentItemPair">
+          <a href="#" ng-repeat="pair in pairs" class="recentItemPair" style="color:black">
             <div ng-click="loadFeed(pair.Feed.Id)">
-              <div ng-bind-html-unsafe="pair.Feed.Title" class="feedTitle"></div> 
-              <div ng-bind-html-unsafe="pair.FeedItem.Title" class="feedItemTitle"></div>
-              <div id="blurb" ng-bind-html-unsafe="pair.FeedItem.Blurb"></div>
+              <div ng-bind-html-unsafe="pair.Feed.Title" class="feedTitle" style="color:#AAAAAA"></div> 
+              <div ng-bind-html-unsafe="pair.FeedItem.Title" class="feedItemTitle" style="margin-left:20px;"></div>
+              <div id="blurb" ng-bind-html-unsafe="pair.FeedItem.Blurb" style="margin-left:20px;"></div>
             </div>
           </div>
         </a>
         <div  ng-repeat="item in items" style="margin:bottom:10px;">
           <a id="{{item.Id}}" href="{{item.Url}}">
-            <div class="feedTitle" when-scrolled="moreOfFeed()" ng-bind-html-unsafe="item.Title"></div>
+            <div class="feedItemTitle" when-scrolled="moreOfFeed()" ng-bind-html-unsafe="item.Title"></div>
           </a>
           <div class="contentsText"  ng-bind-html-unsafe="item.Contents"></div>
         </div>
