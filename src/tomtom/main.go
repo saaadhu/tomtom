@@ -69,7 +69,7 @@ func addFeedHandler(w http.ResponseWriter, r *http.Request) {
     var jsonData JsonData
     json.Unmarshal (body, &jsonData)
 
-    feed := data.Feed { Id: data.GenerateId (jsonData.Url), Url : jsonData.Url }
+    feed := data.Feed { Id: data.GenerateId (jsonData.Url), Url : jsonData.Url, Title: jsonData.Url }
     userid := getUserId (w, r)
     
     was_inserted := db.AddFeed (feed, userid)
