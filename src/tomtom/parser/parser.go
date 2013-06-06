@@ -60,6 +60,7 @@ func parseTime (contents string) (time.Time, error) {
         time.RFC1123Z,
         time.RFC3339,
         "02 Jan 2006 15:04:05 MST",
+        "Mon, 2 Jan 2006 15:04:05 -0700 (UTC)",
     }
     var last_error error
     for _, format := range timeFormats {
