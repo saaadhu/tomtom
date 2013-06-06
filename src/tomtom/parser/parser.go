@@ -84,18 +84,18 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
     channel := r.Channel
     currentTime := time.Now()
     var t time.Time
-    
+
     for i, item := range channel.Items {
         if len(item.PubDate) == 0 {
             t = currentTime.Add(-time.Duration(i) * time.Second)
         } else {
             t, err = parseTime (item.PubDate)
         }
-       
+
        if err != nil {
          panic (err)
        }
-       
+
        if len(item.EncodedContent) > len(item.Description) {
            item.Description = item.EncodedContent
        }
@@ -105,12 +105,12 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
        if blurb_length > 50  {
            blurb_length = 50 
        }
-       
+
        id := item.Guid
        if len(id) == 0 {
            id = item.Title
        }
-       feedItem := data.FeedItem { data.GenerateId(id), item.Title, item.Link, strings.Join(words[:blurb_length], " ") + "...", item.Description, t } 
+       feedItem := data.FeedItem { data.GenerateId(id), item.Title, item.Link, strings.Join(words[:blurb_length], " ") + "...", item.Description, t }
        feedItems = append (feedItems, feedItem)
     }
 
@@ -125,10 +125,10 @@ func parseFeed (contents string) (string, []data.FeedItem, error) {
     if err != nil {
         return "", []data.FeedItem{}, err
     }
-    
+
     currentTime := time.Now()
     var t time.Time
-    
+
     for i, entry := range r.Entries {
        if len(entry.Published) == 0 {
            entry.Published = entry.Updated
@@ -141,7 +141,14 @@ func parseFeed (contents string) (string, []data.FeedItem, error) {
                 panic (err)
             }
         }
-       feedItem := data.FeedItem { data.GenerateId(entry.Id), entry.Title, entry.Link.Href, entry.Contents[:240] + "...", entry.Contents, t } 
+
+       words := strings.Split (entry.Contents, " ")
+       blurb_length := len(words)
+       if blurb_length > 50  {
+           blurb_length = 50
+       }
+
+       feedItem := data.FeedItem { data.GenerateId(entry.Id), entry.Title, entry.Link.Href, strings.Join(words[:blurb_length], " ") + "...", entry.Contents, t }
        feedItems = append (feedItems, feedItem)
     }
 
