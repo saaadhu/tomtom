@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css' />
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400' rel='stylesheet' type='text/css' />
+    <link href='css/tomtom.css' rel='stylesheet' type='text/css' />
+  </head>
+  <body>
+    <form enctype="multipart/form-data" method="post" action="/import" onsubmit="document.getElementById("status").innerHTML='Importing...'">
+      <input type="file" name="opmlFile" />
+      <input type="submit" value="Upload" />
+      <div id="status"></div>
+    </form>
+  </body>
+</html>

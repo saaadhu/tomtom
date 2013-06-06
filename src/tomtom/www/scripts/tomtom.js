@@ -17,6 +17,7 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
     $scope.items = [];
     $scope.pairs = [];
     $scope.new_url = '';
+    $scope.import_triggered = false;
 
     var offset = 0;
     $scope.current_feed_id = '';
@@ -37,13 +38,13 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
         
             $scope.last_loaded_feed_id = id;
             
-            offset += i;
-            if (i != 0)
+            if (offset != 0 && i != 0)
             {
-                $location.hash(data[0].Id);
-                $anchorScroll();
+                //$location.hash(data[0].Id);
+                //$anchorScroll();
             }
 
+            offset += i;
             $scope.more_to_fetch = i == 5;
         });
     }
@@ -84,6 +85,16 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
         });
     };
     
+    $scope.importFeeds = function() {
+        $scope.import_triggered = true;
+    }
+    
+    $scope.importDone = function() {
+        $scope.import_triggered = false;
+        $scope.refreshFeeds();
+        $scope.showRecentFeeds();
+    }
+
     $scope.refreshFeeds();
     $scope.showRecentFeeds();
 }

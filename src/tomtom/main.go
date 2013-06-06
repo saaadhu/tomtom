@@ -111,6 +111,41 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf (w, "%s", data)
 }
 
+func importHandler (w http.ResponseWriter, r *http.Request) {
+    file, _, err := r.FormFile ("opmlFile")
+    
+    if err != nil {
+        log.Print (err)
+        return
+    }
+    contents, err := ioutil.ReadAll (file)
+    
+    if err != nil {
+        log.Print (err)
+        return
+    }
+    
+    userid := getUserId (w, r)
+    urls, err := parser.ParseOPML (contents)
+    
+    if err != nil {
+        log.Print (err)
+        return
+    }
+    
+    for _, url := range (urls) {
+
+        feed := data.Feed { Id: data.GenerateId (url), Url : url }
+        was_inserted := db.AddFeed (feed, userid)
+
+        if was_inserted {
+            fetchFeed (feed)
+        }
+    }
+    
+    fmt.Fprintf (w, "%s", "Imported");
+}
+
 type Pair struct
 {
     Feed data.Feed
@@ -188,6 +223,7 @@ func initWebServer() {
     http.HandleFunc("/feeds", listFeedsHandler)
     http.HandleFunc("/recent", recentFeedItemsHandler)
     http.HandleFunc("/feed/", feedHandler)
+    http.HandleFunc("/import", importHandler)
     http.HandleFunc("/", authenticationHandler)
     http.HandleFunc("/oauth2callback", oauthCallbackHandler)
     http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("/home/saaadhu/code/git/tomtom/src/tomtom/www"))))

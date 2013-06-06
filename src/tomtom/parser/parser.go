@@ -161,3 +161,53 @@ func Parse(contents string) (string, []data.FeedItem, error) {
 
     return title, feedItems, err
 }
+
+type outline struct {
+    XMLName xml.Name `xml:"outline"`
+    XmlUrl string `xml:"xmlUrl,attr"`
+    Outlines []*outline
+}
+
+type body struct
+{
+    Outlines []*outline `xml:"outline"`
+}
+
+type opml struct {
+    XMLName xml.Name `xml:"opml"`
+    Body body `xml:"body"`
+}
+
+func ParseOPML (contents []byte) ([]string, error) {
+    
+    r := opml {}
+    err := xml.Unmarshal (contents, &r)
+    
+    if err != nil {
+        return []string{}, err
+    }
+
+    root := outline { Outlines: r.Body.Outlines }
+    
+    urls := recurse (root)
+    return urls, nil
+}
+
+func recurse (root outline) ([]string) {
+    
+    urls := []string {}
+    
+    if root.XmlUrl != "" {
+        urls = append (urls, root.XmlUrl)
+    }
+    
+    for _, child := range root.Outlines {
+        childUrls := recurse (*child)
+        
+        for _, childUrl := range childUrls {
+            urls = append (urls, childUrl)
+        }
+    }
+    
+    return urls
+}
