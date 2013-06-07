@@ -77,6 +77,11 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
     };
     
     $scope.addUrl = function() {
+        if ($scope.new_url == null || $scope.new_url.length == 0)
+        {
+            alert ('No URL entered!');
+            return;
+        }
         $scope.adding_feed = true;
         $http.post ("/feeds/add", { "url": $scope.new_url }).success (function (data) {
             $scope.new_url = '';
