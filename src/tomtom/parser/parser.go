@@ -5,6 +5,9 @@ import "tomtom/data"
 import "time"
 import "log"
 import "strings"
+import "code.google.com/p/go-charset/charset"
+import _ "code.google.com/p/go-charset/data"
+import "bytes"
 //import "fmt"
 
 type item struct {
@@ -76,7 +79,9 @@ func parseTime (contents string) (time.Time, error) {
 func parseRSS (contents string) (string, []data.FeedItem, error) {
     r := rss {}
     feedItems := []data.FeedItem {}
-    err := xml.Unmarshal([]byte(contents), &r)
+    d := xml.NewDecoder (bytes.NewReader([]byte(contents)));
+    d.CharsetReader = charset.NewReader
+    err := d.Decode(&r)
 
     if err != nil {
         return "", []data.FeedItem{}, err
@@ -120,8 +125,10 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
 func parseFeed (contents string) (string, []data.FeedItem, error) {
     r := feed {}
     feedItems := []data.FeedItem {}
-    err := xml.Unmarshal([]byte(contents), &r)
-
+    d := xml.NewDecoder (bytes.NewReader([]byte(contents)));
+    d.CharsetReader = charset.NewReader
+    err := d.Decode(&r)
+    
     if err != nil {
         return "", []data.FeedItem{}, err
     }
