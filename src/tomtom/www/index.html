@@ -52,8 +52,8 @@
               <div ng-bind-html-unsafe="pair.FeedItem.Title" class="feedItemTitle" style="margin-left:20px;"></div>
               <div id="blurb" ng-bind-html-unsafe="pair.FeedItem.Blurb" style="margin-left:20px;"></div>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
         <div  ng-repeat="item in items" style="margin:bottom:10px;">
           <a id="{{item.Id}}" href="{{item.Url}}">
             <div class="feedItemTitle" when-scrolled="moreOfFeed()" ng-bind-html-unsafe="item.Title"></div>
