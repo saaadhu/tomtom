@@ -101,7 +101,8 @@ func parseRSS (contents string) (string, []data.FeedItem, error) {
         }
 
        if err != nil {
-         panic (err)
+           log.Printf("%s", err)
+           t = time.Now()
        }
 
        if len(item.EncodedContent) > len(item.Description) {
@@ -173,9 +174,6 @@ func Parse(contents string) (string, []data.FeedItem, error) {
     }
 
     title, feedItems, err = parseFeed (contents)
-    if (err != nil) {
-        log.Printf ("%s", err)
-    }
 
     return title, feedItems, err
 }

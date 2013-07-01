@@ -17,7 +17,6 @@ var client = &http.Client {}
 var store = sessions.NewCookieStore([]byte("tomtom-secret-key"))
 
 func fetchUrl(url string, lastModified string) (string, []byte) {
-    log.Printf("Fetching %s : %s", url, lastModified)
     req, _ := http.NewRequest ("GET", url, nil)
 
     if len(lastModified) != 0 {
@@ -31,7 +30,6 @@ func fetchUrl(url string, lastModified string) (string, []byte) {
     defer res.Body.Close()
     
     if res.StatusCode == 304 {
-        log.Printf("%s", "304 Not Modified")
         return "", []byte{}
     }
     
@@ -231,6 +229,7 @@ func oauthCallbackHandler (w http.ResponseWriter, r *http.Request) {
     session, _ := store.Get (r, "session")
     session.Values["UserId"] = user.Id
     session.Values["GivenName"] = user.Given_Name
+    log.Printf("** %s Logged in **", user.Name)
     session.Save (r, w)
     
     http.Redirect(w, r, "/view/", http.StatusFound)
@@ -259,6 +258,7 @@ func fetchFeed (feed data.Feed) {
     title, feedItems, err := parser.Parse (string (contents))
     
     if err != nil {
+        log.Printf ("%s", err)
         return
     }
 
@@ -284,6 +284,7 @@ func main() {
     
     for ;; {
         time.Sleep (15 * time.Minute)
+        log.Printf("Start fetch")
         fetchFeeds ()
     }
     
