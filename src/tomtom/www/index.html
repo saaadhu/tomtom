@@ -38,7 +38,7 @@
           </div>
           <div class="feed" ng-hide="loading_feeds || adding_feed" ng-repeat="feed in feeds" >
             <div class="title">
-              <a  href="#" ng-click="loadFeed(feed.Id);" ng-bind-html-unsafe="feed.Title" ng-class="{'unread': feed.UnreadItemsCount > 0, 'read': feed.UnreadItemsCount == 0}"> </a> 
+              <a  href="#/{{feed.Id}}" ng-click="loadFeed(feed.Id);" ng-bind-html-unsafe="feed.Title" ng-class="{'unread': feed.UnreadItemsCount > 0, 'read': feed.UnreadItemsCount == 0}"> </a> 
             </div> 
             <!--<div class="unreadItemNumberContainer"> ({{feed.UnreadItemsCount}}) </div>-->
           </div>
@@ -57,14 +57,16 @@
             </div>
           </a>
         </div>
-        <div  ng-repeat="item in items" style="margin:bottom:10px;">
-          <a id="{{item.Id}}" href="{{item.Url}}">
-            <div class="feedItemTitle" when-scrolled="moreOfFeed()" ng-bind-html-unsafe="item.Title"></div>
-          </a>
-          <div class="contentsText"  ng-bind-html-unsafe="item.Contents"></div>
-        </div>
-        <div ng-show="more_to_fetch" class="moreContentsBar">
-          <input type="button" ng-click="moreOfFeed();" value="Show more" style="margin-left:45%;" />
+        <div ng-hide="current_feed_id==''">
+          <div  ng-repeat="item in items" style="margin:bottom:10px;">
+            <a id="{{item.Id}}" href="{{item.Url}}">
+              <div class="feedItemTitle" when-scrolled="moreOfFeed()" ng-bind-html-unsafe="item.Title"></div>
+            </a>
+            <div class="contentsText"  ng-bind-html-unsafe="item.Contents"></div>
+          </div>
+          <div ng-show="more_to_fetch" class="moreContentsBar">
+            <input type="button" ng-click="moreOfFeed();" value="Show more" style="margin-left:45%;" />
+          </div>
         </div>
       </div>
     </div>
