@@ -58,6 +58,24 @@ func getUserId (w http.ResponseWriter, r *http.Request) string {
     return id
 }
 
+func removeFeedHandler(w http.ResponseWriter, r *http.Request) {
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        panic(err)
+    }
+    type JsonData struct {
+        Id string
+    }
+    var jsonData JsonData
+    json.Unmarshal (body, &jsonData)
+    
+    feedid := jsonData.Id
+    userid := getUserId (w, r)
+
+    db.RemoveFeed (feedid, userid)
+    listFeedsHandler(w, r)
+}
+
 func addFeedHandler(w http.ResponseWriter, r *http.Request) {
     body, err := ioutil.ReadAll(r.Body)
     if err != nil {
@@ -220,6 +238,7 @@ func oauthCallbackHandler (w http.ResponseWriter, r *http.Request) {
 
 func initWebServer() {
     http.HandleFunc("/feeds/add", addFeedHandler)
+    http.HandleFunc("/feeds/remove", removeFeedHandler)
     http.HandleFunc("/feeds", listFeedsHandler)
     http.HandleFunc("/recent", recentFeedItemsHandler)
     http.HandleFunc("/feed/", feedHandler)

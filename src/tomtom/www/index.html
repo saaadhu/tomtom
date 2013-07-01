@@ -25,6 +25,9 @@
           &nbsp; 
           <input type="button" ng-click="importFeeds();" value="Import" />
         </div>
+        <div style="clear:none; width:50%;margin:0px auto;margin-top:5px;padding:5px" ng-show="current_feed_id!=''">
+          <input type="button" value="Unsubscribe" ng-click="removeFeed(current_feed_id)" />
+        </div>
       </div>
     </div>
     <div class="content">

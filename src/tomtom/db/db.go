@@ -155,6 +155,23 @@ func GetFeedItems (feedId string, offset int) []data.FeedItem {
     return feedItems
 }
 
+func RemoveFeed (feedid string, userid string) {
+    
+    con := getConnection()
+    defer con.Close()
+    stmt, err := con.Prepare("DELETE from userfeeds WHERE feed=?")
+    
+    if err != nil {
+        panic (err)
+    }
+
+    _, err = stmt.Exec (feedid)
+
+    if err != nil {
+        panic (err)
+    }
+}
+
 func AddFeed (feed data.Feed, userid string) bool {
     con := getConnection()
     defer con.Close()

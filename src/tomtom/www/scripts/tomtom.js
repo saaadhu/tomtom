@@ -76,6 +76,15 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
         fetchAndLoadFeedContents (id);
     };
     
+    $scope.removeFeed = function (id) {
+        offset = 0;
+        $scope.items = [];
+        $http.post ("/feeds/remove", { "id": id }).success (function (data) {
+            $scope.refreshFeeds();
+            $scope.current_feed_id = '';
+        });
+    };
+    
     $scope.addUrl = function() {
         if ($scope.new_url == null || $scope.new_url.length == 0)
         {
