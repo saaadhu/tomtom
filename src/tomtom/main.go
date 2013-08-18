@@ -12,8 +12,15 @@ import "log"
 import "code.google.com/p/goauth2/oauth"
 import "github.com/gorilla/sessions"
 import "strconv"
+import "net"
 
-var client = &http.Client {}
+var timeout = time.Duration(30 * time.Second)
+func dialWithTimeout (network, addr string) (net.Conn, error) {
+    return net.DialTimeout (network, addr, timeout)
+}
+
+var transport = http.Transport { Dial: dialWithTimeout }
+var client = &http.Client { Transport : &transport}
 var store = sessions.NewCookieStore([]byte("tomtom-secret-key"))
 
 func fetchUrl(url string, lastModified string) (string, []byte) {
