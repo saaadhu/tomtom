@@ -51,13 +51,21 @@ func getUserId (w http.ResponseWriter, r *http.Request) string {
     session, err := store.Get(r, "session")
     if err != nil {
         http.Redirect(w, r, "/", http.StatusFound)
+        return ""
     }
     
+    useridVal := session.Values["UserId"]
 
-    id := session.Values["UserId"].(string)
+    if useridVal == nil {
+        http.Redirect(w, r, "/", http.StatusFound)
+        return ""
+    }
+
+    id := useridVal.(string)
     
     if len(id) == 0 {
         http.Redirect(w, r, "/", http.StatusFound)
+        return ""
     }
     
     return id
@@ -194,13 +202,22 @@ func recentFeedItemsHandler (w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf (w, "%s", data)
 }
 
+
 var oauthCfg = &oauth.Config {
-    ClientId : "",
-    ClientSecret : "",
+    ClientId : "117014106914.apps.googleusercontent.com",
+    ClientSecret : "JPvw1D4Jd9jo0GeqvXNLUNcq",
+    AuthURL: "https://accounts.google.com/o/oauth2/auth",
+    TokenURL: "https://accounts.google.com/o/oauth2/token",
+    RedirectURL: "http://tomtom.senthilthecoder.com/oauth2callback",
+    Scope: "https://www.googleapis.com/auth/userinfo.profile",
+/*
+    ClientId : "117014106914-fqk3th3i5a13ihtbup2df84i8h96nbom.apps.googleusercontent.com",
+    ClientSecret : "nuXj1eGLUjZBCvok-MCr7JnD",
     AuthURL: "https://accounts.google.com/o/oauth2/auth",
     TokenURL: "https://accounts.google.com/o/oauth2/token",
     RedirectURL: "http://localhost:8080/oauth2callback",
     Scope: "https://www.googleapis.com/auth/userinfo.profile",
+*/
 }
 
 func authenticationHandler (w http.ResponseWriter, r *http.Request) {
