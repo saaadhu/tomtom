@@ -298,7 +298,7 @@ func fetchFeed (feed data.Feed) {
 
 func fetchFeeds() {
     for _,feed := range db.GetAllFeeds() {
-        fetchFeed (feed)
+        go fetchFeed (feed)
     }
 }
 
