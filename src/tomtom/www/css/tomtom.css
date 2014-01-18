@@ -12,6 +12,15 @@ a:visited
     color: navy;
 }
 
+a#button
+{
+    font-size:20pt;
+    color: rgb(200, 200, 200);
+    font-weight: bold;
+    float:left;
+    margin-left: 10px;
+    margin-right:10px;
+}
 
 body
 {
@@ -20,45 +29,40 @@ body
     margin:0px;
 }
 
-input[type=button], input [type=submit]
+input[type=button], input [type=submit], button
 {
-    background-color: rgb(209,72, 54);
-    color: rgb(255, 255, 255);
-    font-family: sans-serif;
     border-color: transparent;
+    background-color: rgb(220, 220, 220);
+    color: rgb(100, 100, 100);
+    font-family: Open Sans, sans-serif;
+    font-size:8pt;
     border-style: solid;
+    clear:none;
 }
 
 input[type=text]
 {
-    font-family: sans-serif;
-    border-color: transparent;
+    font-family: Open Sans, sans-serif;
+    font-size:10pt;
     border-style: solid;
+    border-width:1px;
+    padding: 2px;
 }
 
 .topRow {
     top:0px;
     left:0px;
-    width: 100%;
-    height:30px;
-}
-
-.topBar {
-    top:0px;
-    left:0px;
-    position:fixed;
-    width: 100%;
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
-    background-color: rgb(37, 37, 37);
-    z-index: 1000;
+    clear: none;
+    width: 20%;
 }
 
 .websiteCaption {
-    font-size:1.8em;
-    color: orange;
+    font-size:2.0em;
+    color: rgb(200, 200, 200);
     font-weight: bold;
     float:left;
-    padding: 5px;
+    padding: 2px;
+    width: 100%;
 }
 
 .unread {
@@ -72,31 +76,26 @@ input[type=text]
     margin: 0px;
 }
 .content {
-    width: 95%;
+    width: 97%;
     margin:0px auto;
 }
 
 .feedsBar {
-    clear:none;
+    clear:left;
     float:left;
-    top:45px;
+    
     max-width:250px;
     width:18%;
     margin:0px auto;
-    position:fixed;
     left: 0px;
     border-right:1px solid #EEEEEE;
     overflow:auto;
     height: 93%;
 }
 
-.urlAddBar {
-    width: 60%;
+.urlAddBar {                                                                                               
     max-width:530px;
-    clear:none;
-    float:right;
-    padding: 5px;
-    margin-top:5px;
+    width:90%;
 }
 
 .feedsListContainer {
@@ -114,6 +113,7 @@ input[type=text]
 
 .feed {
     white-space:nowrap;
+    clear: none;
 }
 
 .title {
@@ -121,10 +121,9 @@ input[type=text]
     overflow: hidden;
     white-space:nowrap;
     text-overflow: ellipsis;
-    clear:left;
+    clear:none;
     float:left;
-    padding-bottom: 5px;
-    width:100%;
+    margin: 2px;
 }
 
 .unreadItemNumberContainer {
@@ -139,7 +138,7 @@ input[type=text]
     max-width:960px;
     width:80%;
     margin-left:23%;
-    margin-top:10px;
+    clear:none;
 }
 
 .recentItemPair {

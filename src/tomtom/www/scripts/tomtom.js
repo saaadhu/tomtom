@@ -18,6 +18,7 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
     $scope.pairs = [];
     $scope.new_url = '';
     $scope.import_triggered = false;
+    $scope.show_settings = false;
 
     var offset = 0;
     $scope.current_feed_id = '';
@@ -107,6 +108,10 @@ function TomTomCtrl ($scope, $http, $location, $anchorScroll) {
         $scope.import_triggered = false;
         $scope.refreshFeeds();
         $scope.showRecentFeeds();
+    }
+
+    $scope.toggleSettings = function() {
+	$scope.show_settings = !$scope.show_settings;
     }
 
     $scope.refreshFeeds();
